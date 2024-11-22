@@ -2,28 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>QR Scanner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/1.4.0/html5-qrcode.min.js"></script>
 </head>
 <body>
+    <h1>Сканер QR-кода</h1>
     <div id="qr-reader" style="width: 500px;"></div>
+    <div id="result"></div>
+    
     <script>
-        function onScanSuccess(qrCodeMessage) {
-            console.log("QR Code scanned: ", qrCodeMessage);
-            sendToGoogleSheets(qrCodeMessage);
+        function onScanSuccess(decodedText, decodedResult) {
+            // Обработка успешного сканирования QR-кода
+            document.getElementById("result").innerText = `Сканированный текст: ${decodedText}`;
+            sendToGoogleSheets(decodedText);
+            alert("QR-код успешно отправлен!");
         }
 
         function sendToGoogleSheets(text) {
-            fetch('https://script.google.com/macros/s/1xQPXiNmuOxhMo46ljjbrEXfBUmHN9DLa58YqTldKEklfsW-zuhe0xZwy/exec', {
+            fetch('https://script.googleusercontent.com/macros/echo?user_content_key=fKbCnKa2LIojO9rig4PMIMRiSZmav8lNmqDRGAowwuy-eVi0ToITdc7sEbJTj9WnJjIpCcCBmNBSmHz-ZZGVB_ujtf_wvp9um5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnL3pjbS2-_EU-020913ElPAe9Y24QXqLG96vcfrz4EZ2bo0lVSTWnI1K6dB7FdJ0b9mAE6qlsUPle-xl-rCcZ9pjXQuzpnhLpQ&lib=M-OKQ6ZOqftfwA4ywTRzo8blCWkN5VxJb/exec', {
                 method: 'POST',
                 body: JSON.stringify({ text: text }),
                 headers: { "Content-Type": "application/json" }
             })
             .then(response => response.json())
             .then(responseData => {
-                console.log("Data sent to Google Sheets: ", responseData);
+                console.log("Данные отправлены в Google Sheets: ", responseData);
             })
-            .catch(err => console.error("Error sending data: ", err));
+            .catch(err => console.error("Ошибка при отправке данных: ", err));
         }
 
         const html5QrCode = new Html5Qrcode("qr-reader");
@@ -35,7 +41,7 @@
             },
             onScanSuccess)
             .catch(err => {
-                console.log("Error starting the QR code scanner: ", err);
+                console.log("Ошибка при запуске сканера QR-кодов: ", err);
             });
     </script>
 </body>
